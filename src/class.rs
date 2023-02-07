@@ -89,6 +89,7 @@ struct Version {
 }
 
 pub mod constant_pool {
+    #[macro_export]
     macro_rules! defu8 {
         ($a: ident, $b: literal) => {
             pub const $a : u8 = $b; 
@@ -131,7 +132,23 @@ pub enum ConstantPoolPiece {
     Double ( f64 ), 
     NameAndType { name_index : u16 , descriptor_index : u16 , }, 
     UtfInfo (String ), 
+    MethodHandle { ref_kind : RefKind, ref_index : u16, }, 
 
+}
+
+pub struct RefKind (u8); 
+
+impl RefKind {
+    pub fn new(val: u8) -> Option<RefKind> {
+        if val == 0 || val > 9 {
+            None 
+        } else {
+            Some(RefKind(val))
+        }
+    }
+    pub fn value(&self) -> u8 {
+        self.0
+   }
 }
 
 impl ConstantPoolPiece {
@@ -303,3 +320,5 @@ impl ConstantPoolPiece {
         Some(res) 
     }
 }
+
+pub mod reference;
