@@ -130,6 +130,8 @@ pub enum ConstantPoolPiece {
     Long ( i64 ), 
     Double ( f64 ), 
     NameAndType { name_index : u16 , descriptor_index : u16 , }, 
+    UtfInfo (String ), 
+
 }
 
 impl ConstantPoolPiece {
@@ -156,6 +158,7 @@ impl ConstantPoolPiece {
 }
 
 impl ConstantPoolPiece {
+    /// get double value from 8 bytes. 
     pub fn new_double( low_bytes : u32, high_bytes : u32 ) -> f64 {
         let bits = (low_bytes as u64) | (high_bytes as u64) << 32; 
         let val = match bits {
@@ -174,5 +177,129 @@ impl ConstantPoolPiece {
             }
         }; 
         val 
+    }
+}
+
+enum ExtUtfParser {
+    Nothing, 
+    FiveUpperBit(u16), 
+    ThreeBytes(u16, bool), 
+    SpecialCase(u32, u8), 
+}
+
+impl ConstantPoolPiece {
+    pub fn new_utf_info( utf: &[u8] ) -> Option<String> {
+        let mut res = String::with_capacity(utf.len());
+        let mut parser = ExtUtfParser::Nothing; 
+        let mut it = utf.iter(); 
+        'parser: 
+        while let Some(&i) = it.next() {
+            match parser {
+                ExtUtfParser::Nothing => {
+                    match i {
+                        i if i & 0x80 == 0 => {
+                            res.push(i as char); 
+                        }
+                        i if i & 0xE0 == 0xC0 => {
+                            parser = ExtUtfParser::FiveUpperBit((i as u16 & 0x1f) << 6); 
+                        }
+                        i if i & 0xF0 == 0xE0 => {
+                            parser = ExtUtfParser::ThreeBytes((i as u16 & 0xf) << 12, false); 
+                        }
+                        0xED => {
+                            parser = ExtUtfParser::SpecialCase(0, 0); 
+                        }
+                        _ => return None,
+                    }
+                }
+                ExtUtfParser::FiveUpperBit(mut b) => {
+                    match i {
+                        i if i & 0xC0 == 0x80 => {
+                            b |= i as u16 & 0x3f; 
+                            res.push ( std::char::from_u32(b as u32)? ); 
+                            parser = ExtUtfParser::Nothing; 
+                        }
+                        _ => return None, 
+                    }
+                }
+                ExtUtfParser::ThreeBytes(ref mut b, ref mut k) => {
+                    let i = match i {
+                        i if i & 0xC0 == 0x80 => {
+                            i as u16 & 0x3f 
+                        }
+                        _ => return None, 
+                    }; 
+                    match k {
+                        true => {
+                            *b |= i; 
+                            res.push( std::char::from_u32(*b as u32)? ); 
+                            parser = ExtUtfParser::Nothing; 
+                        }
+                        false => {
+                            *b |= i << 6; 
+                            *k = true; 
+                        }
+                    }
+                }
+                ExtUtfParser::SpecialCase(ref mut a, ref mut index) => {
+                    match index {
+                        0 => {
+                            match i {
+                                i if i & 0xf0 == 0xa0 => { 
+                                    let k = ( i & 0x0f ) + 1; 
+                                    let k = (k as u32) << 16; 
+                                    *a = k; 
+                                }
+                                _ => return None, 
+                            }
+                        },
+                        1 => {
+                            match i {
+                                i if i & 0xB0 == 0x80 => {
+                                    let k = ( i & 0x3F ) as u32; 
+                                    let k = k << 10; 
+                                    *a |= k; 
+                                }
+                                _ => return None, 
+                            }
+                        }
+                        2 => {
+                            match i {
+                                0xED => (), 
+                                _ => return None, 
+                            }
+                        }
+                        3 => {
+                            match i {
+                                i if i & 0xF0 == 0xB0 => {
+                                    let k = ( i & 0xF ) as u32; 
+                                    let k = k << 6; 
+                                    *a |= k; 
+                                }
+                                _ => return None, 
+                            }
+                        }
+                        4 => {
+                            match i {
+                                i if i & 0xB0 == 0x80 => {
+                                    let k = (i & 0x3F) as u32; 
+                                    *a |= k; 
+                                }
+                                _ => return None, 
+                            }
+                            res.push( std::char::from_u32(*a)? ); 
+                            parser = ExtUtfParser::Nothing; 
+                            continue 'parser; 
+                        }
+                        _ => unreachable!(), 
+                    }
+                    *index += 1; 
+                }
+            }
+        }
+        let ExtUtfParser::Nothing = parser else {
+            return None; 
+        }; 
+        Some(res) 
     }
 }
