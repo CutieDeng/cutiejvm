@@ -23,6 +23,7 @@ pub mod reference_kind_literals {
 /// ### Special case 
 /// If the method is `<init>` or `<clinit>`, the `reference_kind` must be `NEW_INVOKE_SPECIAL`.
 /// 
+/// 
 pub enum RefType {
     /// The `get_field` instruction. 
     /// 
