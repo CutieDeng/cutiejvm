@@ -136,20 +136,7 @@ pub enum ConstantPoolPiece {
 
 }
 
-pub struct RefKind (u8); 
-
-impl RefKind {
-    pub fn new(val: u8) -> Option<RefKind> {
-        if val == 0 || val > 9 {
-            None 
-        } else {
-            Some(RefKind(val))
-        }
-    }
-    pub fn value(&self) -> u8 {
-        self.0
-   }
-}
+type RefKind = reference::RefType; 
 
 impl ConstantPoolPiece {
     /// get float value from 4 bytes. 
