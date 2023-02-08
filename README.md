@@ -73,3 +73,12 @@ Chatper 7: JVM 指令集表（操作数序）。
 而在 *The Java Virtual Machine Specification, Java SE 19 Edition* 中，读者可以阅读 *The Java Language Specification, Java SE 19 Edition* 第 17 章，来了解关于**线程**和**锁**的更多信息。
 该章充分展示了 JSR 133 Expert Group 提出的 *The Java Memory Model and Thread Specification* 机制。 
 
+### Chapter 1.4 记号
+
+本翻译没有特殊的记号描述。
+
+### Chapter 1.5 反馈
+
+Readers are invited to report technical errors and ambiguities in *The Java® Virtual Machine Specification* to jls-jvms-spec-comments@openjdk.java.net
+
+Questions concerning the generation and manipulation of `class` files by `javac` (the reference compiler for the Java programming language ) may be sent to compiler-dev@openjdk.java.net 
