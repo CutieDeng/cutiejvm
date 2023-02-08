@@ -1,10 +1,10 @@
 # Cutie 的 Java 虚拟机
 
-## Chapter 1. 简介
+## Chapter 1 简介
 
 该虚拟机项目计划实现一个符合 SE 19 版本的 Java 虚拟机。
 
-## Chapter 2. 背景：Java 虚拟机
+### Chapter 1.1 背景：Java 虚拟机
 
 Java 虚拟机是 Java 平台的基石。
 Java 平台描述了一个**硬件无关**和**操作系统**无关的世界，而这依赖于以 Java 虚拟机技术为核心的支持。
@@ -28,7 +28,7 @@ JVM 本身不必了解 *Java* 程序语言的细节，而只需要知道关于 `
 
 而在此处描述的 JVM 与 Java SE 19 平台兼容，同时，支持在 *The Java Language Specification, Java SE 19 Edition* 所描述的 Java 语言。
 
-## Chapter 3. 背景：Java 程序语言
+### Chapter 1.2 背景：Java 程序语言
 
 Java® 程序设计语言是一门通用目的、面向对象、支持并发的高级语言。
 它的语法与 C 和 C++ 类似，但删除了很多使得 C/C++ 变得更复杂、恼人和不安全的特性。 
@@ -51,4 +51,25 @@ WWW 的拥趸很快便发现，通过 HTML (*HyperText Mark-up Language* 超文�
 在纳入了 Java 平台的支持后，一个网页浏览器不再受限于原来预先定义的功能范围。
 用户在访问具有动态内容的网站时，不再有必要担心它们的机器会被其内容攻击。
 而开发者（在 Java 的帮助下）能够一次编写，处处执行。(Write a program once, and it will run on any machine supplying a Java run-time environment. ) 
+
+### Chapter 1.3 本规范的结构
+
+Chapter 2: 概述了 JVM 架构。
+
+Chapter 3: 介绍了 Java 编程语言转换为 JVM 指令的一些代码示例。
+
+Chapter 4: 描述了 `class` 文件格式，其平台无关性的类、接口二进制表示。
+
+Chapter 5: 定义了 JVM 启动，以及和类、接口相关的一些基本行为：装载、链接和初始化。
+
+Chapter 6: 规范了 JVM 指令集，顺序（助记符度）展示了所有指令。
+
+Chatper 7: JVM 指令集表（操作数序）。
+
+在第二版的 *The Java® Virtual Machine Specification* 的第二章，有对 Java 语言的概述：Java 是被设计于支持 JVM 实现的一门语言，但并非 JVM 规范中的一部分。
+*The Java Virtual Machine Specification, Java SE 19 Edition* 明确说出，读者可以参照 *The Java Language Specification, Java SE 19 Edition* 来得到 Java 语言的更多信息。
+
+在第二版的 *The Java® Virtual Machine Specificaiton* 第八章中，其具体地列出了 JVM 线程在使用共享内存交流过程中的底层行为。
+而在 *The Java Virtual Machine Specification, Java SE 19 Edition* 中，读者可以阅读 *The Java Language Specification, Java SE 19 Edition* 第 17 章，来了解关于**线程**和**锁**的更多信息。
+该章充分展示了 JSR 133 Expert Group 提出的 *The Java Memory Model and Thread Specification* 机制。 
 
